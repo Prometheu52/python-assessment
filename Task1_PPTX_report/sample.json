@@ -1,9 +1,6 @@
 {
   "presentation": [
     {
-      "type" : "asd"
-    },
-    {
       "type" : "title",
       "title" : "The Title Text",
       "content" : "The Sub-Title Text"

@@ -1,5 +1,5 @@
-import sys
 import logging as log
+import sys
 import os
 
 import slides
@@ -7,14 +7,14 @@ import slides
 
 def main(path: str):
     if not os.path.exists(path):
-        log.critical("The provided path does not exists")
+        log.critical("The path to the config file does not exist!")
         exit_on_failure()
 
     slides.ConfingDecoder(path)
 
 
 def exit_on_failure():
-    print("Something went wrong, check the log.txt for further info!")
+    print("Something went wrong, check log.txt for further info!")
     exit()
 
 
@@ -30,7 +30,6 @@ if __name__ == "__main__":
             exit_on_failure()
         case 2:
             log.info("Starting execution")
-            # print(f"argv: {sys.argv[1]}")
             main(sys.argv[1])
         case other:
             log.critical(f"More arguments than needed (provided: {len(sys.argv) - 1})")

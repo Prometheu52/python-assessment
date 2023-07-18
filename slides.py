@@ -1,16 +1,16 @@
+from typing import List, Dict
+import logging as log
 import os.path
+import imghdr
+import json
 import io
 
-import pptx
-import logging
-import json
-import logging as log
 from main import exit_on_failure
+
+import pptx
 from pptx.presentation import Presentation
 from pptx.util import Cm
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT
-from typing import List, Dict
-import imghdr
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,41 +18,45 @@ import matplotlib.pyplot as plt
 
 
 class ConfingDecoder:
+    """
+    ConfigDecoder takes in a ´str´ that is a path to a json file that describes the layout of a presentation.
+    """
     def __init__(self, config_path: str):
         self.config_path = config_path
-        self.presentations: [str] = []
         try:
-            self.json_file = open(self.config_path)
-            self.config: dict = json.load(self.json_file)
+            json_file = open(self.config_path)
+            self.config: dict = json.load(json_file)
         except OSError as err:
-            log.critical(f"Could not open file with error: {err}")
+            # Error when opening config.json
+            log.critical(f"Could not open configuration file, error: {err}")
             exit_on_failure()
         except ValueError as err:
+            # Error when parsing config.json
             log.critical(f"The provided file is not in a valid json format, error: {err}")
             exit_on_failure()
 
-        # Json usually requires keys to be unique. In the other cases it appears to behave like, if only the
-        # last part is there. So any duplicate name problem is avoided.
+        # Json standards usually require keys to be unique. In other cases it appears to behave like, if only the
+        # last part is there. So any duplicate key (pres. name) problem is avoided.
         for presentation in self.config.keys():
             # Presentation raises ValueError if the given file is not a pptx file,
             # since we are not providing any, it should be fine
+            log.info(f"Creating {presentation}.pptx")
             prs: Presentation = pptx.Presentation()
             for slide in self.config[presentation]:
-                # Handle Type
                 match slide["type"]:
                     case "title":
-                        logging.info(f"Title slide added to {presentation}")
+                        log.info(f"Title slide added to {presentation}.pptx")
                         self.__title_slide(prs, slide["title"], slide["content"])
                     case "text":
-                        logging.info(f"Text slide added to {presentation}")
+                        log.info(f"Text slide added to {presentation}.pptx")
                         self.__text_slide(prs, slide["title"], slide["content"])
                     case "list":
-                        logging.info(f"List slide added to {presentation}")
+                        log.info(f"List slide added to {presentation}.pptx")
                         self.__list_slide(prs, slide["title"], slide["content"])
                     case "picture":
                         img_path = slide["content"]
                         if os.path.isfile(img_path) and imghdr.what(img_path) is not None:
-                            logging.info(f"Picture slide added to {presentation}")
+                            log.info(f"Picture slide added to {presentation}.pptx")
                             self.__picture_slide(prs, slide["title"], img_path)
                         else:
                             log.error(f"Content in \"{presentation}\" at {slide}")
@@ -61,6 +65,7 @@ class ConfingDecoder:
                     case "plot":
                         csv_path = slide["content"]
                         if os.path.isfile(csv_path):
+                            log.info(f"Plot slide added to {presentation}.pptx")
                             self.__plot_slide(prs, slide["title"], csv_path, slide["configuration"])
                         else:
                             log.error("The given file path does not exist or unreachable, or the file is not a valid picture by \"imghdr\"")
@@ -69,17 +74,17 @@ class ConfingDecoder:
                         log.error(f"Unsupported type: \"{other}\" in \"{presentation}\" at {slide}")
                         log.info("Skipping slide..")
                         continue
-                # Handle Title
-                # Handle Content
-                # Handle Configuration
+
             prs.save(f"{presentation}.pptx")
 
-    def __title_slide(self, prs, title_name: str, subtitle: str):
+    @staticmethod
+    def __title_slide(prs, title_name: str, subtitle: str):
         slide = prs.slides.add_slide(prs.slide_layouts[0])
         slide.shapes.title.text = title_name
         slide.placeholders[1].text = subtitle
 
-    def __text_slide(self, prs: Presentation, title_name: str, content: str):
+    @staticmethod
+    def __text_slide(prs: Presentation, title_name: str, content: str):
         slide = prs.slides.add_slide(prs.slide_layouts[5])
         slide.shapes.title.text = title_name
 
@@ -95,7 +100,8 @@ class ConfingDecoder:
         tf.add_paragraph()
         tf.paragraphs[0].alignment = PP_PARAGRAPH_ALIGNMENT.LEFT
 
-    def __list_slide(self, prs, title_name: str, content: List[Dict]):
+    @staticmethod
+    def __list_slide(prs: Presentation, title_name: str, content: List[Dict]):
         slide = prs.slides.add_slide(prs.slide_layouts[1])
         slide.shapes.title.text = title_name
 
@@ -106,7 +112,8 @@ class ConfingDecoder:
             p.text = value[1]
             p.level = key[1]
 
-    def __picture_slide(self, prs, title_name: str, img_path: str):
+    @staticmethod
+    def __picture_slide(prs: Presentation, title_name: str, img_path: str):
         slide = prs.slides.add_slide(prs.slide_layouts[5])
         slide.shapes.title.text = title_name
 
@@ -120,7 +127,8 @@ class ConfingDecoder:
         # So i guess it's fine
         # slide.shapes.add_picture(img_path, x, y)
 
-    def __plot_slide(self, prs, title_name: str, csv_path: str, config: dict):
+    @staticmethod
+    def __plot_slide(prs: Presentation, title_name: str, csv_path: str, config: dict):
         arr = np.loadtxt(csv_path, delimiter=";", dtype=float)
         x = []
         y = []
@@ -139,5 +147,5 @@ class ConfingDecoder:
 
         image_stream = io.BytesIO()
         plt.savefig(image_stream)
-        slide.shapes.add_picture(image_stream, x, y, prs.slide_height - Cm(10))
-        # slide.shapes.add_picture(image_stream, x, y)
+        # slide.shapes.add_picture(image_stream, x, y, prs.slide_height - Cm(10))
+        slide.shapes.add_picture(image_stream, x, y)
