@@ -11,7 +11,7 @@
     {
       "type" : "text",
       "title" : "The Title Text",
-      "content" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia dolor sapien, \nquis finibus metus faucibus a. Sed sollicitudin ante vitae vehicula tristique. Nam vitae urna aliquam lorem consequat suscipit ac id nisl. Praesent vel nisi accumsan, \nconsectetur velit nec, pharetra eros. Vestibulum ac eros pretium, eleifend urna vel, posuere risus. Donec purus mi, eleifend a mauris vel, condimentum lobortis ex. Nunc lacinia lectus vitae arcu vestibulum hendrerit. "
+      "content" : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia dolor sapien, \nquis finibus metus faucibus a. Sed sollicitudin ante vitae vehicula tristique. "
     },
     {
       "type" : "list",
@@ -31,11 +31,18 @@
     {
       "type" : "plot",
       "title" : "The Title Text",
-      "content" : "sample.dat",
+      "content" : "sample.csv",
       "configuration" : {
         "x-label" : "The Plot X Label",
         "y-label" : "The Plot Y Label"
       }
+    }
+  ],
+  "presentation2": [
+    {
+      "type" : "picture",
+      "title" : "My cat picture",
+      "content" : "picture.jpg"
     }
   ]
 }
