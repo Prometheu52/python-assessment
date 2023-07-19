@@ -2,7 +2,7 @@ import logging as log
 import sys
 import os
 
-import slides
+import ppt_builder
 
 
 def main(path: str):
@@ -10,7 +10,7 @@ def main(path: str):
         log.critical("The path to the config file does not exist!")
         exit_on_failure()
 
-    slides.ConfingDecoder(path)
+    ppt_builder.ConfingDecoder(path)
 
 
 def exit_on_failure():
@@ -19,7 +19,6 @@ def exit_on_failure():
 
 
 if __name__ == "__main__":
-    # TODO: Check if the python-pptx modul is installed
     # Init logging
     log.basicConfig(filename="log.txt", encoding='utf-8', level=log.INFO,
                     format='%(asctime)s |%(levelname)s| %(message)s')

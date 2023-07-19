@@ -38,7 +38,7 @@
   "presentation2": [
     {
       "type" : "picture",
-      "title" : "My cat picture",
+      "title" : "Cat picture",
       "content" : "picture.jpg"
     }
   ]
