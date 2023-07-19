@@ -21,3 +21,5 @@ Launch the main.py file with the path to a config.json file, as a commandline ar
 ```console
  $ python main.py [path_to_json]
 ```
+
+Note: If your ppt is missing a slide check the log.txt, it should contain the error about it.
