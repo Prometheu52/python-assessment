@@ -12,3 +12,12 @@
 ## Tasks
 
 ### [Task 1](Task1_PPTX_report/README.md)
+
+***
+
+## Usage
+
+Launch the main.py file with the path to a config.json file, as a commandline argument.
+```console
+ $ python main.py [path_to_json]
+```
